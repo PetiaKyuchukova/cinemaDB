@@ -1,0 +1,678 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.4
+-- Dumped by pg_dump version 12.4
+
+-- Started on 2021-06-16 18:24:36
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 654 (class 1247 OID 41036)
+-- Name: persontype; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.persontype AS ENUM (
+    'retiree',
+    'student',
+    'normal'
+);
+
+
+ALTER TYPE public.persontype OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 208 (class 1259 OID 32789)
+-- Name: actors; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.actors (
+    id integer NOT NULL,
+    name character varying
+);
+
+
+ALTER TABLE public.actors OWNER TO postgres;
+
+--
+-- TOC entry 207 (class 1259 OID 32787)
+-- Name: actors_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.actors_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.actors_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2905 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: actors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.actors_id_seq OWNED BY public.actors.id;
+
+
+--
+-- TOC entry 211 (class 1259 OID 41056)
+-- Name: projection; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.projection (
+    id integer NOT NULL,
+    available_seats integer DEFAULT 30,
+    projection_time date,
+    film_id integer
+);
+
+
+ALTER TABLE public.projection OWNER TO postgres;
+
+--
+-- TOC entry 210 (class 1259 OID 41054)
+-- Name: auditoriums_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.auditoriums_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.auditoriums_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2906 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: auditoriums_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.auditoriums_id_seq OWNED BY public.projection.id;
+
+
+--
+-- TOC entry 203 (class 1259 OID 24608)
+-- Name: cinema; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cinema (
+    id bigint NOT NULL,
+    city character varying(255),
+    name character varying(255),
+    street_name character varying(255),
+    street_num integer
+);
+
+
+ALTER TABLE public.cinema OWNER TO postgres;
+
+--
+-- TOC entry 206 (class 1259 OID 24633)
+-- Name: cinema_film; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cinema_film (
+    cinema_id integer NOT NULL,
+    film_id integer NOT NULL
+);
+
+
+ALTER TABLE public.cinema_film OWNER TO postgres;
+
+--
+-- TOC entry 202 (class 1259 OID 24606)
+-- Name: cinema_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cinema_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.cinema_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2907 (class 0 OID 0)
+-- Dependencies: 202
+-- Name: cinema_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cinema_id_seq OWNED BY public.cinema.id;
+
+
+--
+-- TOC entry 213 (class 1259 OID 41065)
+-- Name: client; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.client (
+    id integer NOT NULL,
+    price double precision,
+    holder_first_name character varying,
+    holder_last_name character varying,
+    email character varying,
+    count_tickets integer,
+    client_date date,
+    type character varying
+);
+
+
+ALTER TABLE public.client OWNER TO postgres;
+
+--
+-- TOC entry 205 (class 1259 OID 24619)
+-- Name: film; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.film (
+    video_format character varying,
+    id integer NOT NULL,
+    name character varying,
+    ticket_price double precision,
+    genre character varying,
+    summary character varying,
+    cover_art bytea
+);
+
+
+ALTER TABLE public.film OWNER TO postgres;
+
+--
+-- TOC entry 209 (class 1259 OID 32798)
+-- Name: film_actors; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.film_actors (
+    film_id integer NOT NULL,
+    actors_id integer NOT NULL
+);
+
+
+ALTER TABLE public.film_actors OWNER TO postgres;
+
+--
+-- TOC entry 204 (class 1259 OID 24617)
+-- Name: film_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.film_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.film_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2908 (class 0 OID 0)
+-- Dependencies: 204
+-- Name: film_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.film_id_seq OWNED BY public.film.id;
+
+
+--
+-- TOC entry 214 (class 1259 OID 49232)
+-- Name: projection_client; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.projection_client (
+    projection_id integer NOT NULL,
+    client_id integer NOT NULL
+);
+
+
+ALTER TABLE public.projection_client OWNER TO postgres;
+
+--
+-- TOC entry 212 (class 1259 OID 41063)
+-- Name: tickets_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.tickets_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tickets_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2909 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: tickets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.tickets_id_seq OWNED BY public.client.id;
+
+
+--
+-- TOC entry 2732 (class 2604 OID 32792)
+-- Name: actors id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.actors ALTER COLUMN id SET DEFAULT nextval('public.actors_id_seq'::regclass);
+
+
+--
+-- TOC entry 2730 (class 2604 OID 24611)
+-- Name: cinema id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cinema ALTER COLUMN id SET DEFAULT nextval('public.cinema_id_seq'::regclass);
+
+
+--
+-- TOC entry 2735 (class 2604 OID 41068)
+-- Name: client id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.client ALTER COLUMN id SET DEFAULT nextval('public.tickets_id_seq'::regclass);
+
+
+--
+-- TOC entry 2731 (class 2604 OID 24622)
+-- Name: film id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.film ALTER COLUMN id SET DEFAULT nextval('public.film_id_seq'::regclass);
+
+
+--
+-- TOC entry 2733 (class 2604 OID 41059)
+-- Name: projection id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.projection ALTER COLUMN id SET DEFAULT nextval('public.auditoriums_id_seq'::regclass);
+
+
+--
+-- TOC entry 2893 (class 0 OID 32789)
+-- Dependencies: 208
+-- Data for Name: actors; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.actors (id, name) FROM stdin;
+1	Яна Маринова
+2	Луиза Григорова
+3	Елза
+4	Анна
+5	Олаф
+6	Хироу
+7	Джоузефин Лангфорд
+8	Шейн Пол Макги
+9	Дилън Спроус
+10	Винс Вон
+11	Катрин Нютън
+12	Селест Конър
+13	Миша Ошерович
+14	Дуейн Джонсън - Скалата
+15	Карън Гилън
+16	Марин Хинкле
+17	Мадисън Ийман
+18	Джак Блек
+19	Мишел Йео
+20	Ченг Пей-Пей
+21	Розалинд Чао
+22	Ци Ма
+23	Джейсън Скот Лий
+24	Крис Пайн
+25	Кристен Уиг
+26	Педро Паскал
+27	Киану Рийвс
+28	Том Кени
+29	Стивън Хиленбург
+30	Александър Сано
+31	Димо Алексиев
+\.
+
+
+--
+-- TOC entry 2888 (class 0 OID 24608)
+-- Dependencies: 203
+-- Data for Name: cinema; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cinema (id, city, name, street_name, street_num) FROM stdin;
+11	София	Cinema World	Цариградско шосе	15
+\.
+
+
+--
+-- TOC entry 2891 (class 0 OID 24633)
+-- Dependencies: 206
+-- Data for Name: cinema_film; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cinema_film (cinema_id, film_id) FROM stdin;
+11	1
+11	2
+11	3
+11	4
+11	5
+11	6
+11	7
+11	8
+\.
+
+
+--
+-- TOC entry 2898 (class 0 OID 41065)
+-- Dependencies: 213
+-- Data for Name: client; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.client (id, price, holder_first_name, holder_last_name, email, count_tickets, client_date, type) FROM stdin;
+39	\N	Ivan	Ivanov	ivanIvanov@abv.bg	4	2021-01-21	\N
+\.
+
+
+--
+-- TOC entry 2890 (class 0 OID 24619)
+-- Dependencies: 205
+-- Data for Name: film; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.film (video_format, id, name, ticket_price, genre, summary, cover_art) FROM stdin;
+2D	1	Замръзналото кралство	10	Анимация	Дали лятото, което Елза върна в Арендел, ще остане, какво трябва да преживеят двете сестри, за да възцари единствено красота и дали „ледената дарба“ ще помогне и този път? Отговори на всички тези въпроси ще открием с великолепния филмов шедьовър, който Дисни ще ни подари.	\N
+3D	2	Диви и щастливи	12	Екшън	Боряна е разведена и недоволна от себе си жена, която се лута в настоящето. Животът й напълно се обърква, когато решава да помогне на гаджето си Цветан. Той е съмнителен тип, но Боряна е заслепена от любов и най-вече се страхува да остане сама. „Заема“ 30 хиляди лева от сейфа на богато английско семейство, за което работи, с идеята да ги върне преди някой да забележи. Действията ѝ пораждат ефекта на снежната топка. „Без да иска“ отвлича сина на богаташите Мартин и въвлича най-добрата си приятелка Мила в цялата история. Последва ураган от импулсивни решения и двете жени се оказват на пътя към Варна с отвлечен мъж на задната седалка на кола, торба с откраднати пари и ченгетата по петите им. Планът им е да занесат парите на Цветан, а той да им помогне да напуснат страната. По пътя обаче двете жени преоткриват себе си и разбират какво е нужно, за да бъдат щастливи.	\N
+2D	3	След сблъсъка (After We Collided)	10	Романтика/Драма	В продължението  на романa на Анна Тод „След“ Теса и Хардин се опитват да изгладят недоразуменията след бурното начало на своите взаимоотношения. Появяват се обаче нови пречки за това. Теса прави шокиращо откритие за началото на връзката им, както и за мистериозното минало на своя любим. Тя не е сигурна дали може да преглътне още едно нарушено обещание.	\N
+2D	4	Freaky / Откачалка	10	Трилър/Ужаси	Ha Mили й ocтaвa oщe eднa гoдинa, зa дa нaпycнe дocaднaтa гимнaзия. Ho вcичкo ce oбъpквa, кoгaтo e нападната oт ужасяващ сериен yбиeц и e зaдeйcтвaнo пpoклятиe, кoeтo paзмeня тeлaтa им. Ceгa тя e възpacтeн издиpвaн мъж и имa caмo един дeн дa въpнe тялoтo cи, преди размяната да стане необратима...	\N
+3D	5	Jumanji: The Next Level / Джуманджи: Следващо ниво	12	Екшън Комедия Приключенски	Четиримата младежи, които победиха играта в „Добре дошли в джунглата“ са вече колежани и се завръщат удома в Ню Хампшър за коледната ваканция. Всеки вече поотделно се опитва да пребори нови предизвикателства в живота. Когато Спенсър отново влиза в играта, за да го спасят и върнат в нашия свят, Марта, Фридж и Бетани трябва да се обединят и гмурнат в шеметно и дръзко приключение във вселената на Джуманджи.	\N
+3D	6	Mulan/Мулан	12	Екшън Драма Приключенски	Когато Китай е нападнат от нашественици от севера, императорът издава указ, че по един мъж от всяко семейство трябва да служи в армията и да защитава страната си.В семейството на Хуа Мулан единственият мъж е възрастният и баща, който някога е бил уважаван воин, но сега е прекалено. За да освободи баща си от дълга му към родината и императора, Мулан решава да се престори на мъж и заминава вместо него да се подготви за предстоящия сблъсък с Хан и страховитата вещица, която го съпътства.Ако някой разбере тайната на Мулан, наказанието ще бъде твърде сурово, но едва след като разкрие истинската си същност, тя би могла да достигне пълния си потенциал и да се превърне в легенда!	\N
+2D	7	Жената-чудо 1984	10	Приключенски/Екшън	Преди да стане Жената Чудо, тя беше Диана, принцеса на Амазонките, отгледана на закътан райски остров и обучена да бъде непобедим воин. Но когато един американски пилот катастрофира на брега и разказва за голям конфликт, който бушува във външния свят, Диана напуска дома си, убедена, че може да спре заплахата. Биейки се наравно с мъжете във войната, която трябва да сложи край на всички конфликти, Диана ще открие истинските си сили ... и истинската си съдба.\nСпондж Боб се връща назад в годините на своя живот към историята на произхода за прочутата гъба, която живее дълбоко в океана. Ще видим как още малкият герой се запознава със своите приятели от Бикини Ботъм на един летен лагер.\n	\N
+3D	8	Спондж Боб: Гъба беглец	12	Анимация	Спондж Боб се връща назад в годините на своя живот към историята на произхода за прочутата гъба, която живее дълбоко в океана. Ще видим как още малкият герой се запознава със своите приятели от Бикини Ботъм на един летен лагер.	\N
+\.
+
+
+--
+-- TOC entry 2894 (class 0 OID 32798)
+-- Dependencies: 209
+-- Data for Name: film_actors; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.film_actors (film_id, actors_id) FROM stdin;
+2	1
+2	2
+1	3
+1	4
+1	5
+2	30
+2	31
+3	6
+3	7
+3	8
+3	9
+4	10
+4	11
+4	12
+4	13
+5	14
+5	15
+5	16
+5	17
+5	18
+6	19
+6	20
+6	21
+6	22
+7	23
+7	24
+7	25
+7	26
+8	27
+8	28
+8	29
+\.
+
+
+--
+-- TOC entry 2896 (class 0 OID 41056)
+-- Dependencies: 211
+-- Data for Name: projection; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.projection (id, available_seats, projection_time, film_id) FROM stdin;
+1	50	2021-01-21	3
+\.
+
+
+--
+-- TOC entry 2899 (class 0 OID 49232)
+-- Dependencies: 214
+-- Data for Name: projection_client; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.projection_client (projection_id, client_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2910 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: actors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.actors_id_seq', 5, true);
+
+
+--
+-- TOC entry 2911 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: auditoriums_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.auditoriums_id_seq', 1, true);
+
+
+--
+-- TOC entry 2912 (class 0 OID 0)
+-- Dependencies: 202
+-- Name: cinema_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cinema_id_seq', 13, true);
+
+
+--
+-- TOC entry 2913 (class 0 OID 0)
+-- Dependencies: 204
+-- Name: film_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.film_id_seq', 2, true);
+
+
+--
+-- TOC entry 2914 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: tickets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.tickets_id_seq', 39, true);
+
+
+--
+-- TOC entry 2743 (class 2606 OID 32797)
+-- Name: actors actors_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.actors
+    ADD CONSTRAINT actors_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2747 (class 2606 OID 41062)
+-- Name: projection auditoriums_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.projection
+    ADD CONSTRAINT auditoriums_id_key UNIQUE (id);
+
+
+--
+-- TOC entry 2741 (class 2606 OID 24647)
+-- Name: cinema_film cinema_film_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cinema_film
+    ADD CONSTRAINT cinema_film_pkey PRIMARY KEY (cinema_id, film_id);
+
+
+--
+-- TOC entry 2737 (class 2606 OID 24616)
+-- Name: cinema cinema_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cinema
+    ADD CONSTRAINT cinema_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2751 (class 2606 OID 49189)
+-- Name: client client_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.client
+    ADD CONSTRAINT client_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2745 (class 2606 OID 32802)
+-- Name: film_actors film_actors_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.film_actors
+    ADD CONSTRAINT film_actors_pkey PRIMARY KEY (film_id, actors_id);
+
+
+--
+-- TOC entry 2739 (class 2606 OID 24627)
+-- Name: film film_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.film
+    ADD CONSTRAINT film_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2753 (class 2606 OID 49236)
+-- Name: projection_client projection_clien_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.projection_client
+    ADD CONSTRAINT projection_clien_pkey PRIMARY KEY (projection_id, client_id);
+
+
+--
+-- TOC entry 2749 (class 2606 OID 49209)
+-- Name: projection projection_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.projection
+    ADD CONSTRAINT projection_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2754 (class 2606 OID 24636)
+-- Name: cinema_film fk_cinema_film_cinema ; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cinema_film
+    ADD CONSTRAINT "fk_cinema_film_cinema " FOREIGN KEY (cinema_id) REFERENCES public.cinema(id);
+
+
+--
+-- TOC entry 2755 (class 2606 OID 24641)
+-- Name: cinema_film fk_cinema_film_film; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cinema_film
+    ADD CONSTRAINT fk_cinema_film_film FOREIGN KEY (film_id) REFERENCES public.film(id);
+
+
+--
+-- TOC entry 2757 (class 2606 OID 32808)
+-- Name: film_actors fk_film_actors_actors; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.film_actors
+    ADD CONSTRAINT fk_film_actors_actors FOREIGN KEY (actors_id) REFERENCES public.actors(id);
+
+
+--
+-- TOC entry 2756 (class 2606 OID 32803)
+-- Name: film_actors fk_film_actors_film; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.film_actors
+    ADD CONSTRAINT fk_film_actors_film FOREIGN KEY (film_id) REFERENCES public.film(id);
+
+
+--
+-- TOC entry 2758 (class 2606 OID 49247)
+-- Name: projection fk_projection; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.projection
+    ADD CONSTRAINT fk_projection FOREIGN KEY (film_id) REFERENCES public.film(id) NOT VALID;
+
+
+--
+-- TOC entry 2760 (class 2606 OID 49242)
+-- Name: projection_client fk_projection_client_client; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.projection_client
+    ADD CONSTRAINT fk_projection_client_client FOREIGN KEY (client_id) REFERENCES public.client(id);
+
+
+--
+-- TOC entry 2759 (class 2606 OID 49237)
+-- Name: projection_client fk_projection_client_projection; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.projection_client
+    ADD CONSTRAINT fk_projection_client_projection FOREIGN KEY (projection_id) REFERENCES public.projection(id);
+
+
+-- Completed on 2021-06-16 18:24:37
+
+--
+-- PostgreSQL database dump complete
+--
+
